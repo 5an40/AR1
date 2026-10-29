@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAR Video Player</title>
+    
+    <!-- Подключаем A-Frame и корректные скрипты MindAR для работы с изображениями -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    
+    <style>
+        body { margin: 0; overflow: hidden; }
+        /* Кнопка ручного запуска звука, если браузер заблокирует автоплей */
+        #play-btn {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 999; padding: 14px 28px; background: #28a745; color: white;
+            border: none; border-radius: 30px; font-family: sans-serif; font-size: 16px;
+            cursor: pointer; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Кнопка включения звука -->
+    <button id="play-btn">Включить звук видео</button>
+
+    <!-- AR-сцена с инициализацией маркера -->
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.0001; filterBeta:0.001;" 
+             color-space="sRGB" 
+             renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" 
+             device-orientation-permission-ui="enabled: false">
+        
+        <a-assets>
+            <!-- Путь к вашему видеофайлу -->
+            <video id="ar-video" src="./video.mp4" preload="auto" loop="true" playsinline webkit-playsinline></video>
+        </a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <!-- Исправлено: добавлен обязательный тег-контейнер для привязки к маркеру (индекс 0) -->
+        <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
+            <!-- Видео-плоскость. Меняйте width и height под пропорции вашего видео (например, 1 и 0.56 для 16:9) -->
+            <a-video src="#ar-video" width="1" height="0.56" position="0 0 0" rotation="0 0 0"></a-video>
+        </a-entity>
+        
+    </a-scene>
+
+    <script>
+        const video = document.querySelector('#ar-video');
+        const playBtn = document.querySelector('#play-btn');
+        const targetEntity = document.querySelector('#target-entity');
+
+        // Когда камера нашла маркер
+        targetEntity.addEventListener("targetFound", event => {
+            video.play().catch(() => {
+                // Если политика браузера блокирует автозапуск со звуком — показываем кнопку
+                playBtn.style.display = "block";
+            });
+        });
+
+        // Когда маркер пропал из вида
+        targetEntity.addEventListener("targetLost", event => {
+            video.pause();
+        });
+
+        // Клик по кнопке принудительно запускает видео
+        playBtn.addEventListener('click', () => {
+            video.play();
+            playBtn.style.display = "none";
+        });
+    </script>
+</body>
+</html>
