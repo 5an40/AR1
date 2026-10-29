@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebAR Video Player</title>
+    <title>AR World</title>
     
     <!-- Подключаем A-Frame и корректные скрипты MindAR для работы с изображениями -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
@@ -42,7 +42,7 @@
         <!-- Исправлено: добавлен обязательный тег-контейнер для привязки к маркеру (индекс 0) -->
         <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
             <!-- Видео-плоскость. Меняйте width и height под пропорции вашего видео (например, 1 и 0.56 для 16:9) -->
-            <a-video src="#ar-video" width="1" height="0.56" position="0 0 0" rotation="0 0 0"></a-video>
+            <a-video src="#ar-video" width="1.5" height="0.84" position="0 0 0" rotation="0 0 0"></a-video>
         </a-entity>
         
     </a-scene>
